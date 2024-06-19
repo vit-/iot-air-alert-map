@@ -2,16 +2,35 @@
 #include <StateDisplay.h>
 #include <WiFiManager.h>
 
+// Shift register pins
+const int latchPin = D3; // Pin connected to ST_CP of 74HC595
+const int clockPin = D2; // Pin connected to SH_CP of 74HC595
+const int dataPin = D4;  // Pin connected to DS of 74HC595
 
-//Pin connected to ST_CP of 74HC595
-const int latchPin = D3;
-//Pin connected to SH_CP of 74HC595
-const int clockPin = D2;
-//Pin connected to DS of 74HC595
-const int dataPin = D4;
+const int hardResetPin = D6; // Hard reset pin
+
 
 unsigned int currentState = 0;
 unsigned int newState = 0;
+
+
+boolean isHardResetPressed() {
+  if (digitalRead(hardResetPin) == LOW) {
+    // ensure it is indeed pressed
+    delay(2000);
+    if (digitalRead(hardResetPin) == LOW) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void hardReset() {
+  ESP.eraseConfig();
+  delay(2000);
+  ESP.reset();
+  delay(2000);
+}
 
 
 void setup() {
@@ -19,8 +38,14 @@ void setup() {
     // it is a good practice to make sure your code sets wifi mode how you want it.
 
     Serial.begin(115200);
+    pinMode(hardResetPin, INPUT_PULLUP);
     initStateDisplay(latchPin, clockPin, dataPin);
     
+    if (isHardResetPressed()) {
+      Serial.println("Hard reset button pressed, resetting");
+      hardReset();
+    }
+
     //WiFiManager, Local intialization. Once its business is done, there is no need to keep it around
     WiFiManager wm;
 
