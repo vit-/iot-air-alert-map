@@ -20,5 +20,16 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
+      - name: Create config secrets.ini
+        run: |
+          cat << EOF > ./config/secrets.ini
+          ${{ secrets.CONFIG_SECRETS_INI }}
+          EOF
+      - name: Create ssl private key
+        run: |
+          cat << EOF > ./ssl/private.key
+          ${{ secrets.SSL_SIGNATURE_PRIVATE_KEY }}
+          EOF
+
       - name: Build PlatformIO Project
         run: pio run
