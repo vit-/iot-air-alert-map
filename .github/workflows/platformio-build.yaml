@@ -32,3 +32,9 @@ jobs:
 
       - name: Build PlatformIO Project
         run: pio run
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware.signed.bin
+          path: ./.pio/build/nodemcuv2/firmware.signed.bin
