@@ -2,3 +2,4 @@
 .vscode/*
 
 config/secrets.ini
+ssl/*
