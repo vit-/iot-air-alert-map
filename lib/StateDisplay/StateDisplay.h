@@ -13,7 +13,13 @@ void writeRegister(unsigned int num) {
   Serial.println(num);
 
   digitalWrite(_latchPin, LOW);
-  shiftOut(_dataPin, _clockPin, MSBFIRST, num);
+
+  uint8_t part;
+  for (int i = 24; i >= 0; i = i - 8) {
+    part = (num >> i) & 0xff;
+    shiftOut(_dataPin, _clockPin, MSBFIRST, part);
+  }
+
   digitalWrite(_latchPin, HIGH);
 }
 
@@ -33,7 +39,7 @@ void initStateDisplay(int latchPin, int clockPin, int dataPin, int stateBlinkCou
     _dataPin = dataPin;
     _stateBlinkCount = stateBlinkCount;
     _stateBlinkDelay = stateBlinkDelay;
-    
+
     //set pins to output so you can control the shift register
     pinMode(latchPin, OUTPUT);
     pinMode(clockPin, OUTPUT);
